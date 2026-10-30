@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14263a">
+<meta name="description" content="A personal Harada development tracker with 64 actions, daily focus, weekly reviews and a 12-month roadmap.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Harada Personal Tracker</title>
+<style>
+:root{--navy:#14263a;--navy2:#203b55;--mint:#64c9a1;--bg:#f3f6f8;--card:#fff;--ink:#172536;--muted:#68798a;--line:#e2e8ed;--soft:#edf3f6;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+button,input,textarea{font:inherit}button{cursor:pointer}
+header{background:var(--navy);color:white;padding:22px 18px 20px;border-radius:0 0 24px 24px}
+.headrow{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:850;letter-spacing:.07em;font-size:18px}.tag{font-size:11px;color:#c2d1de}
+.goal-label{font-size:11px;color:#b9c9d8;font-weight:700;letter-spacing:.08em;margin:20px 0 6px}
+textarea,input{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:white;color:var(--ink);outline:none}
+textarea:focus,input:focus{border-color:#5b9d87;box-shadow:0 0 0 3px #64c9a122}
+header textarea{background:#203b55;border-color:#40576d;color:white;min-height:62px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:#263f57;padding:11px;border-radius:13px}.stat strong{display:block;font-size:21px}.stat span{font-size:11px;color:#c4d1dc}
+.progress{height:8px;background:#344b61;border-radius:99px;overflow:hidden;margin-top:14px}.progress>i{display:block;height:100%;background:var(--mint);width:0;transition:width .2s}
+main{max-width:720px;margin:auto;padding:16px 14px 28px}
+nav{position:fixed;z-index:5;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:7px 5px calc(7px + env(safe-area-inset-bottom))}
+nav button{border:0;background:transparent;color:var(--muted);font-size:11px;padding:7px 2px;border-radius:12px}nav button b{display:block;font-size:19px;font-weight:600;margin-bottom:1px}nav button.active{color:#176c51;background:#e9f6f0}
+h1{font-size:22px;margin:4px 0 5px}h2{font-size:17px;margin:0}.sub{color:var(--muted);font-size:13px;margin:0 0 15px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px;margin:12px 0;box-shadow:0 2px 9px #1a304008}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.muted{color:var(--muted);font-size:12px}.pill{font-size:11px;border-radius:99px;background:var(--soft);padding:5px 9px;color:#456071;font-weight:700}
+.task{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}.task:last-child{border-bottom:0}.task input[type=checkbox]{width:20px;height:20px;margin:1px 0;accent-color:#21815e;flex:0 0 auto}.task label{flex:1}.task small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.mins{font-size:12px;color:var(--muted);white-space:nowrap}
+.btn{border:0;border-radius:12px;background:var(--navy);color:white;padding:11px 14px;font-weight:700}.btn.secondary{background:var(--soft);color:var(--navy)}.btn.danger{background:#fff0ef;color:#a13c35}.btn.full{width:100%}
+.field{margin:12px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+.area{margin:12px 0}.area-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}.area-title{font-weight:750;font-size:14px}.action-list{display:grid;gap:4px}.action-list .task{padding:8px 0}
+details summary{list-style:none;cursor:pointer}details summary::-webkit-details-marker{display:none}.area-card{padding:13px}
+.road{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.road:last-child{border:0}.num{width:34px;height:34px;border-radius:11px;background:var(--soft);display:grid;place-items:center;font-weight:800;flex:none}
+.notice{background:#fff8e8;border:1px solid #f1dfb5;color:#71551a;padding:12px;border-radius:13px;font-size:12px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:10px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header>
+ <div class="headrow"><div><div class="brand">HARADA TRACKER</div><div class="tag">Your personal development system</div></div><div class="pill" style="background:#29445c;color:#dce9f2">12-MONTH PLAN</div></div>
+ <div class="goal-label">MY MAIN GOAL</div>
+ <textarea id="goal" aria-label="Main goal" rows="2">Become highly skilled, knowledgeable, confident, and capable of earning independently.</textarea>
+ <div class="stats">
+  <div class="stat"><strong id="doneCount">0/64</strong><span>Actions done</span></div>
+  <div class="stat"><strong id="percent">0%</strong><span>Overall progress</span></div>
+  <div class="stat"><strong id="minutes">0/60</strong><span>Minutes today</span></div>
+ </div>
+ <div class="progress"><i id="overallBar"></i></div>
+</header>
+<main>
+<section id="today" class="screen">
+ <h1>Today's 60-minute routine</h1><p class="sub">Four small blocks. One focused hour. Tick each one when finished.</p>
+ <div class="card">
+  <div class="row"><b>Daily completion</b><span class="pill" id="dailyCount">0/4 completed</span></div>
+  <div class="progress" style="background:#e8edf0;margin:12px 0"><i id="dailyBar" style="background:#299b72"></i></div>
+  <div id="dailyTasks"></div>
+  <button class="btn secondary full" id="resetDaily">Reset today's checklist</button>
+ </div>
+ <div class="card">
+  <h2>Learning journal</h2>
+  <div class="field"><label for="learned">What did I learn today?</label><textarea id="learned" rows="3" placeholder="A new idea, fact, or skill..."></textarea></div>
+  <div class="field"><label for="applied">What did I practice or apply?</label><textarea id="applied" rows="3" placeholder="Describe what you actually did..."></textarea></div>
+  <div class="muted">Your entries are saved automatically on this device.</div>
+ </div>
+</section>
+<section id="actions" class="screen hidden">
+ <h1>Your 64-action chart</h1><p class="sub">Eight development areas, eight actions each. Mark an action complete when you have practised or achieved it.</p>
+ <div class="card"><div class="row"><b>Chart progress</b><b id="chartCount">0 / 64</b></div><div class="progress" style="background:#e8edf0"><i id="chartBar" style="background:#299b72"></i></div></div>
+ <div id="areas"></div>
+ <button class="btn danger full" id="resetActions">Reset all 64 actions</button>
+</section>
+<section id="review" class="screen hidden">
+ <h1>Weekly review</h1><p class="sub">Set aside 15–20 minutes once a week. Be honest, specific, and kind to yourself.</p>
+ <div class="card">
+  <div class="field"><label for="wins">1. What went well this week?</label><textarea id="wins" rows="3" placeholder="Achievements, completed tasks, new skills..."></textarea></div>
+  <div class="field"><label for="difficult">2. What was difficult or inconsistent?</label><textarea id="difficult" rows="3" placeholder="What got in the way? What do I need to learn?"></textarea></div>
+  <div class="field"><label for="next">3. What will I focus on next week?</label><textarea id="next" rows="3" placeholder="Choose one to three priorities..."></textarea></div>
+  <div class="muted">Your review is saved automatically on this device.</div>
+ </div>
+ <div class="card"><div class="muted">Actions completed so far</div><h1 id="reviewProgress">0 / 64</h1><div class="progress" style="background:#e8edf0"><i id="reviewBar" style="background:#299b72"></i></div></div>
+</section>
+<section id="roadmap" class="screen hidden">
+ <h1>12-month roadmap</h1><p class="sub">Use these phases as direction, not a deadline. Adjust your pace as you learn.</p>
+ <div class="card" id="roadmapList"></div>
+ <div class="notice">Remember: progress comes from repeated practice and real application—not just watching videos or collecting information.</div>
+ <div class="card"><h2>How to use this tracker</h2><p class="muted">1. Complete your daily 60-minute routine. 2. Choose actions from the 64-action chart and practise them over time. 3. Review your week. 4. Revisit your goal and roadmap monthly.</p></div>
+</section>
+<footer>HARADA PERSONAL DEVELOPMENT TRACKER · Build yourself one action at a time.</footer>
+</main>
+<nav aria-label="Main navigation">
+ <button class="active" data-tab="today"><b>◷</b>Today</button>
+ <button data-tab="actions"><b>▦</b>64 Actions</button>
+ <button data-tab="review"><b>✎</b>Review</button>
+ <button data-tab="roadmap"><b>⌁</b>Roadmap</button>
+</nav>
+<script>
+const areas=[
+["Knowledge & learning",["Read or study a new topic","Learn basic finance","Improve general knowledge","Study science or technology","Learn history and current events","Practise critical thinking","Take structured notes","Explain something you learned"]],
+["Communication",["Practise speaking clearly","Improve vocabulary","Practise active listening","Write a short summary","Learn to ask better questions","Practise confident body language","Improve English communication","Give a short explanation aloud"]],
+["Digital & technical skills",["Practise computer basics","Improve typing speed","Learn spreadsheets","Learn document formatting","Explore AI tools","Practise online research","Learn a useful digital skill","Create a small digital project"]],
+["Career & earning",["Explore career opportunities","Study a job skill","Improve resume or portfolio","Research legitimate online work","Practise a client task","Learn professional etiquette","Build a sample work project","Review career progress"]],
+["Personal discipline",["Follow a daily routine","Plan tomorrow's priorities","Complete the hardest task first","Reduce unnecessary scrolling","Keep my workspace organized","Practise consistency","Finish what I start","Review my habits"]],
+["Health & energy",["Do a short workout","Stretch or walk","Drink enough water","Keep a regular sleep routine","Take a screen break","Practise stress management","Eat balanced meals","Review energy and wellbeing"]],
+["Money & independence",["Track daily spending","Review weekly budget","Learn a money concept","Save a small amount","Compare prices before buying","Study emergency funds","Explore a safe income idea","Review savings progress"]],
+["Confidence & personal growth",["Write one personal strength","Try something unfamiliar","Practise making decisions","Reflect on a mistake","Ask for constructive feedback","Do one uncomfortable task","Celebrate a small win","Write a lesson from today"]]
+];
+const daily=[["knowledge","Knowledge building",15,"Read, watch a lesson, or study one topic."],["skill","Skill development",20,"Practise one skill deliberately."],["application","Practical application",15,"Use what you learned in a small task."],["reflection","Reflection",10,"Record what you learned and what to improve."]];
+const roadmap=[["Months 1–2","Build your foundation","Create a routine, improve learning habits, communication, and basic digital skills."],["Months 3–4","Develop core skills","Practise spreadsheets, writing, research, speaking, and one employable skill."],["Months 5–6","Apply what you learn","Create sample projects, practise real tasks, and build a small portfolio."],["Months 7–8","Build confidence","Take on harder tasks, seek feedback, and improve your consistency."],["Months 9–10","Build career readiness","Improve your portfolio, explore opportunities, and practise professional communication."],["Months 11–12","Review and level up","Evaluate progress, identify gaps, and set your next year's development goals."]];
+const KEY="haradaTrackerV1";
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));updateStats()}
+function todayKey(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function ensureDay(){if(state.day!==todayKey()){state.day=todayKey();state.dailyDone=[];state.learned="";state.applied=""}}
+ensureDay();
+function el(id){return document.getElementById(id)}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderDaily(){el("dailyTasks").innerHTML=daily.map(([id,title,min,desc])=>`<div class="task"><input type="checkbox" id="d-${id}" ${state.dailyDone?.includes(id)?"checked":""}><label for="d-${id}"><b>${title}</b><small>${desc}</small></label><span class="mins">${min} min</span></div>`).join("");daily.forEach(([id])=>el("d-"+id).addEventListener("change",e=>{state.dailyDone=state.dailyDone||[];state.dailyDone=e.target.checked?[...state.dailyDone,id]:state.dailyDone.filter(x=>x!==id);save()}))}
+function renderAreas(){el("areas").innerHTML=areas.map((a,i)=>{let count=a[1].filter((_,j)=>state.actions?.includes(i*8+j)).length;return `<details class="card area-card" ${i===0?"open":""}><summary><div class="area-head"><span class="area-title">${i+1}. ${a[0]}</span><span class="pill">${count}/8</span></div></summary><div class="action-list">${a[1].map((item,j)=>{let n=i*8+j;return `<div class="task"><input type="checkbox" id="a-${n}" ${state.actions?.includes(n)?"checked":""}><label for="a-${n}">${item}</label></div>`}).join("")}</div></details>`}).join("");areas.forEach((a,i)=>a[1].forEach((_,j)=>el("a-"+(i*8+j)).addEventListener("change",e=>{state.actions=state.actions||[];let n=i*8+j;state.actions=e.target.checked?[...state.actions,n]:state.actions.filter(x=>x!==n);save();renderAreas()})))}
+function updateStats(){let count=state.actions?.length||0,p=Math.round(count/64*100),mins=daily.filter(([id])=>state.dailyDone?.includes(id)).reduce((s,x)=>s+x[2],0),dc=state.dailyDone?.length||0;el("doneCount").textContent=count+"/64";el("percent").textContent=p+"%";el("minutes").textContent=mins+"/60";el("overallBar").style.width=p+"%";el("dailyCount").textContent=dc+"/4 completed";el("dailyBar").style.width=(dc/4*100)+"%";el("chartCount").textContent=count+" / 64";el("chartBar").style.width=p+"%";el("reviewProgress").textContent=count+" / 64";el("reviewBar").style.width=p+"%"}
+function bindText(id,key){el(id).value=state[key]||"";el(id).addEventListener("input",e=>{state[key]=e.target.value;save()})}
+function renderRoadmap(){el("roadmapList").innerHTML=roadmap.map((p,i)=>`<div class="road"><div class="num">${i+1}</div><div><div class="muted">${p[0]}</div><b>${p[1]}</b><div class="muted" style="margin-top:4px">${p[2]}</div></div></div>`).join("")}
+function show(tab){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("hidden",s.id!==tab));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));window.scrollTo(0,0)}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.tab)));
+el("goal").value=state.goal||el("goal").value;el("goal").addEventListener("input",e=>{state.goal=e.target.value;save()});
+bindText("learned","learned");bindText("applied","applied");bindText("wins","wins");bindText("difficult","difficult");bindText("next","next");
+el("resetDaily").addEventListener("click",()=>{if(confirm("Reset today's checklist?")){state.dailyDone=[];save();renderDaily()}});
+el("resetActions").addEventListener("click",()=>{if(confirm("Clear all 64 completed actions? This cannot be undone.")){state.actions=[];save();renderAreas()}});
+renderDaily();renderAreas();renderRoadmap();updateStats();
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+</script>
+</body></html>
